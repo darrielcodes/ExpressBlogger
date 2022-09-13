@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
+// VALIDATION IMPORT
+var { validateBlogData } = require('../validation/blogs');
+
 const sampleBlogs = [
     {
           title: "dicta",
@@ -57,25 +60,38 @@ router.get("/all", (req, res) => {
     res.json({
         success: true,
         blogs: sampleBlogs
-    })
+    });
 });
 
 // GET SINGLE BLOG
 router.get("/single/:blogTitleToGet", (req, res) => {
     const blogTitleToGet = req.params.blogTitleToGet;
-    const indexOfBlog = sampleBlogs.findIndex((blog) => {
+    //const indexOfBlog = sampleBlogs.findIndex((blog) => {
+    //     if (blog.title === blogTitleToGet){
+    //         console.log("found match")
+    //         return true
+    //     } else {
+    //         console.log("no match")
+    //         return false
+    //     }
+    // });
+
+    // const foundBlog = sampleBlogs[indexOfBlog];
+
+    const foundBlog = sampleBlogs.find((blog) => {
         if (blog.title === blogTitleToGet){
             console.log("found match")
             return true
-        } else {
+            } else {
             console.log("no match")
             return false
-        }
+       }
+    })
+
+    res.json({
+        success: true,
+        blog: foundBlog
     });
-
-    const foundBlog = sampleBlogs[indexOfBlog];
-
-    res.json(foundBlog);
 });
 
 // DELETE SINGLE BLOG
@@ -104,5 +120,80 @@ router.delete("/single/:blogTitleToDelete", (req, res) => {
     });
 });
 
+// POST NEW BLOG 
+router.post('/create-one', (req, res) => {
+    const title = req.body.title;
+    const text = req.body.text;
+    const author = req.body.author;
+    const category = req.body.category;
+
+    const createBlog = {
+        title,
+        text,
+        author,
+        category,
+        createdAt: new Date(),
+        lastModified: new Date()
+    };
+
+const blogCheck = validateBlogData(createBlog);
+
+if (blogCheck.isValid === false){
+    res.json({
+        success: false
+    })
+    return;
+};
+
+sampleBlogs.push(createBlog);
+
+res.json({
+    success: true
+  });
+});
+
+// PUT/UPDATE A NEW BLOG
+router.put('/update-one/:blogTitle', (req,res) => {
+    const blogTitle = req.params.blogTitle;
+
+    const blogIndex = sampleBlogs.findIndex((blog) => {
+        if (blog.title === blogTitle){
+            return true;
+        } else {
+            return false;
+        }
+    });
+
+    const originalBlog = sampleBlogs[blogIndex];
+
+    console.log(originalBlog);
+
+    const updatedBlog = {
+        title: req.body.title,
+        text: req.body.text,
+        author: req.body.author,
+        category: req.body.category,
+        createdAt: new Date(),
+        lastModified: new Date()
+    };
+
+    const updatedBlogCheck = validateBlogData(updatedBlog);
+
+    if (updatedBlogCheck.isValid === false){
+        res.json({
+            success: false,
+            message: updatedBlogCheck.message
+        })
+        return;
+    };
+
+
+    sampleBlogs[blogIndex] = updatedBlog;
+
+    res.json({
+        success: true,
+        blog: updatedBlog
+      });
+})
 // Module.exports is listing the variables in this file to send to other files
 module.exports = router;
