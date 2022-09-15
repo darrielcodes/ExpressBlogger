@@ -57,9 +57,25 @@ router.get('/', function(req, res, next) {
 
 // GET ALL BLOGS
 router.get("/all", (req, res) => {
+    
+    const fields = req.query.fields
+    const fieldsArray = fields.split(",")
+    
+    // .map() - loops thru array and modifies each entry then returns modiefied entry into new array
+    const mappedBlogs = sampleBlogs.map((blog) => {
+        const blogWithFields = {};
+
+        //loop thru fieldsArray and assign that field from blog to blogwithFields
+        //ex; first field = title ---> blogswithFields["title"] = blog["title"]
+        fieldsArray.forEach((field) => {
+            blogWithFields[field] = blog[field]
+        });
+        
+        return blogWithFields
+    })
     res.json({
         success: true,
-        blogs: sampleBlogs
+        blogs: mappedBlogs
     });
 });
 
@@ -140,7 +156,8 @@ const blogCheck = validateBlogData(createBlog);
 
 if (blogCheck.isValid === false){
     res.json({
-        success: false
+        success: false,
+        message: blogCheck.message
     })
     return;
 };
@@ -169,11 +186,11 @@ router.put('/update-one/:blogTitle', (req,res) => {
     console.log(originalBlog);
 
     const updatedBlog = {
-        title: req.body.title,
+        title: originalBlog.title,
         text: req.body.text,
         author: req.body.author,
         category: req.body.category,
-        createdAt: new Date(),
+        createdAt: originalBlog.createdAt,
         lastModified: new Date()
     };
 

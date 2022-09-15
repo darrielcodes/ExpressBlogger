@@ -20,7 +20,47 @@ const validateBlogData = (sampleBlogs) => {
             message: "Author is required, must be a string and 40 characters or less"
 		}
     };
+    if (sampleBlogs.category !== undefined && sampleBlogs.category.length > 0 && Array.isArray(sampleBlogs.category)) {
+        if (sampleBlogs.category.length > 10){
+            return {
+                isValid: false,
+                message: "Category can't have more than 10 categories."
+            }
+        }
+const availableCategories = ["Lorem","ipsum","dolor","sit","amet"];
 
+let isArrayValid = true; 
+
+    sampleBlogs.category.forEach((blogCategory) => {
+        if (availableCategories.includes(blogCategory) === false){
+            isArrayValid = false;
+        }
+    });
+
+    if (isArrayValid === false){
+        return {
+            isValid: false,
+            message: "Category can only be one of the following: Lorem,ipsum,dolor,sit,amet."
+        }
+    };
+
+    const filteredBlogs = sampleBlogs.category.filter((blog) => {
+            if (typeof(blog) !== "string"){
+                return true
+            } else {
+                return false
+            }
+        });
+
+    if (filteredBlogs.length < 0) {
+            return {
+                isValid: false,
+                message: "Category can only have strings."
+            }
+        }
+console.log(filteredBlogs)
+    }
+    
     return {
 		isValid: true
 	}
