@@ -9,6 +9,7 @@ const userList = [];
 /* GET users listing. */
 // bc our base path for users.js is '/users' and the route names concatenate, the final path is 'localhost:3000/users/all'
 router.get('/all', function(req, res, next) {
+ 
   res.send('respond with a resource');
 });
 
@@ -22,11 +23,14 @@ router.get('/single', (req, res) => {
 
 router.post('/create-one', (req, res) => {
 
+  try {
+
   const email = req.body.email;
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const age = req.body.age;
   const favoriteFoods = req.body.favoriteFoods;
+  
   
   const userData = {
     email,
@@ -54,6 +58,12 @@ router.post('/create-one', (req, res) => {
   res.json({
     success: true
   });
+} catch (e) {
+ console.log(e);
+ res.json({
+   error: String(e)
+ })   
+}
 
 })
 

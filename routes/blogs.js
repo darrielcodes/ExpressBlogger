@@ -48,16 +48,25 @@ const sampleBlogs = [
   ];
 /* GET blogs default */
 router.get('/', function(req, res, next) {
-  res.json({
+  try {
+    res.json({
 		success: true,
 		route: "blogs",
 		message: "hello from the blogs default route"
-	});
+    });
+} catch (e) {
+    // in catch block, always console.log the error and respond with an error object
+    console.log(e);
+    res.json({
+        success: false,
+        error: String(e)
+    })
+}
 });
 
 // GET ALL BLOGS
 router.get("/all", (req, res) => {
-    
+    try{
     const fields = req.query.fields
     const fieldsArray = fields.split(",")
     
@@ -77,10 +86,19 @@ router.get("/all", (req, res) => {
         success: true,
         blogs: mappedBlogs
     });
+} catch (e) {
+    // in catch block, always console.log the error and respond with an error object
+    console.log(e);
+    res.json({
+        success: false,
+        error: String(e)
+    })
+}
 });
 
 // GET SINGLE BLOG
 router.get("/single/:blogTitleToGet", (req, res) => {
+   try{
     const blogTitleToGet = req.params.blogTitleToGet;
     //const indexOfBlog = sampleBlogs.findIndex((blog) => {
     //     if (blog.title === blogTitleToGet){
@@ -108,10 +126,19 @@ router.get("/single/:blogTitleToGet", (req, res) => {
         success: true,
         blog: foundBlog
     });
+}
+catch (e) {
+    console.log(e);
+    res.json({
+        success: false,
+        error: String(e)
+    })
+}
 });
 
 // DELETE SINGLE BLOG
 router.delete("/single/:blogTitleToDelete", (req, res) => {
+    try {
     const blogTitleToDelete = req.params.blogTitleToDelete;
     const indexOfBlog = sampleBlogs.findIndex((blog) => {
         if (blog.title === blogTitleToDelete){
@@ -134,10 +161,18 @@ router.delete("/single/:blogTitleToDelete", (req, res) => {
     res.json({
         hasBeenDeleted: true
     });
+} catch (e) {
+    console.log(e);
+    res.json({
+        success: false,
+        error: String(e)
+    })
+}
 });
 
 // POST NEW BLOG 
 router.post('/create-one', (req, res) => {
+   try {
     const title = req.body.title;
     const text = req.body.text;
     const author = req.body.author;
@@ -167,10 +202,19 @@ sampleBlogs.push(createBlog);
 res.json({
     success: true
   });
+} catch (e) {
+    // in catch block, always console.log the error and respond with an error object
+    console.log(e);
+    res.json({
+        success: false,
+        error: String(e)
+    })
+}
 });
 
 // PUT/UPDATE A NEW BLOG
 router.put('/update-one/:blogTitle', (req,res) => {
+    try {
     const blogTitle = req.params.blogTitle;
 
     const blogIndex = sampleBlogs.findIndex((blog) => {
@@ -211,6 +255,15 @@ router.put('/update-one/:blogTitle', (req,res) => {
         success: true,
         blog: updatedBlog
       });
+    }
+    catch (e) {
+        // in catch block, always console.log the error and respond with an error object
+        console.log(e);
+        res.json({
+            success: false,
+            error: String(e)
+        })
+    }
 })
 // Module.exports is listing the variables in this file to send to other files
 module.exports = router;
